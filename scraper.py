@@ -1,68 +1,78 @@
-import requests, os, colorama
+import requests
+import os
+import colorama
 
 os.system("title NCEA Past Paper Scraper - Made by Asher Yang")
 os.system("cls")
 
-def scrape():
-  # Parameters
-  current_year = 2022
-  subj = input("Subject Name (eg calc, chem, bio)\n> ")
-  ass = input("Achievement Standard (eg 91577)\n> ")
+def scrape(first_year=2013, last_year=2021):
+	"""
+	Find all NCEA past papers for an achievement standard between specified years.
 
-  try:
-    if len(ass) == 5:
-      ass = int(ass)
-    else:
-      print("AS number (eg 91577) should be 5 characters")
-  except:
-    print("Please input the AS number (eg 91577)")
+	Keyword arguments:
+	first_year -- The earliest year from which we want to download papers (default 2013)
+	last_year -- The latest year from which we want to download papers (default 2021)
+	"""
 
-  # Make the folders
-  try: os.mkdir(subj)
-  except: pass
+	subject = input("Subject Name (e.g. calc, chem, bio)\n> ")
 
-  try: os.mkdir(f"{subj}/{ass}")
-  except: pass
-  try: os.mkdir(f"{subj}/{ass}/exm")
-  except: pass
-  try: os.mkdir(f"{subj}/{ass}/ass")
-  except: pass
+	# Loop until user enters a standard in the correct format
+	while True:
+		standard = input("Achievement Standard (e.g. 91577)\n> ")
 
-  r = requests.get(f"https://www.nzqa.govt.nz/nqfdocs/ncea-resource/exams/2013/{ass}-ass-2013.pdf", stream=True).status_code # take mark scheme, it is smaller than question book most of the time
-  if r == 200:
-    NCEA = True
-    print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} NCEA paper detected")
-  elif r == 404:
-    NCEA = False
-    r2 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{ass}-qbk-2013.pdf", stream=True).status_code #some scholarship papers use qbk (math, english), others exm (sciences). we must account for this. waste of bandwidth tbh
-    if r2 == 200:
-      print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} Scholarship paper type qbk (likely math or essay) detected")
-      papertype = "qbk"
-    else:
-      r3 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{ass}-exm-2013.pdf", stream=True).status_code
-      if r3 == 200:
-        print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} Scholarship paper type exm (likely science) detected")
-        papertype = "exm"
-      if r == r2 == r3 == 404:
-        print(f"{colorama.Fore.RED}[ERROR]{colorama.Fore.WHITE} Paper not found. Did you input the correct AS number?")
-        scrape()
+		# Check if the entered standard is a 5 digit number
+		if len(standard) == 5 and standard.isdigit():
+			break
 
+		print("Achievement Standard should consist of 5 numbers (e.g. 91577)")
 
-  # Steal the files hehe
-  for n in range(current_year, 2013, -1):
-    n -= 1 #computer numbers momento
+	# Check if directory already exists
+	if not os.path.exists(subject):
+		# Make required directories
+		os.mkdir(subject)
+		os.mkdir(f"{subject}/{standard}")
+		os.mkdir(f"{subject}/{standard}/exm")
+		os.mkdir(f"{subject}/{standard}/ass")
 
-    if NCEA == True: # NCEA Papers
-        open(f"{subj}/{ass}/exm/{ass}-exm-{n}.pdf", 'wb').write(requests.get(f"https://www.nzqa.govt.nz/nqfdocs/ncea-resource/exams/{n}/{ass}-exm-{n}.pdf").content)
-        print(f"{colorama.Fore.WHITE}Downloaded exam paper {colorama.Fore.CYAN}{ass}{colorama.Fore.WHITE} from {colorama.Fore.CYAN}{n}{colorama.Fore.WHITE}.")
-        open(f"{subj}/{ass}/ass/{ass}-ass-{n}.pdf", 'wb').write(requests.get(f"https://www.nzqa.govt.nz/nqfdocs/ncea-resource/schedules/{n}/{ass}-ass-{n}.pdf").content)
-        print(f"{colorama.Fore.WHITE}Downloaded marking scheme {colorama.Fore.CYAN}{ass}{colorama.Fore.WHITE} from {colorama.Fore.CYAN}{n}{colorama.Fore.WHITE}.")
-    if NCEA == False: # Scholarship Papers
-        open(f"{subj}/{ass}/exm/{ass}-{papertype}-{n}.pdf", 'wb').write(requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/{n}/{ass}-{papertype}-{n}.pdf").content) #papertype as math/essay exams have a qbk and abk
-        print(f"{colorama.Fore.CYAN}[SCHOLARSHIP] {colorama.Fore.WHITE}Downloaded exam paper {colorama.Fore.CYAN}{ass}{colorama.Fore.WHITE} from {colorama.Fore.CYAN}{n}{colorama.Fore.WHITE}.")
-        open(f"{subj}/{ass}/ass/{ass}-ass-{n}.pdf", 'wb').write(requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/{n}/{ass}-ass-{n}.pdf").content)
-        print(f"{colorama.Fore.CYAN}[SCHOLARSHIP] {colorama.Fore.WHITE}Downloaded marking scheme {colorama.Fore.CYAN}{ass}{colorama.Fore.WHITE} from {colorama.Fore.CYAN}{n}{colorama.Fore.WHITE}.")
+	# If an assessment standard is a scholarship paper or not 
+	scholarship_paper = False
 
+	# Attempt to find marking scheme for given assessment standard
+	r = requests.get(f"https://www.nzqa.govt.nz/nqfdocs/ncea-resource/schedules/2013/{standard}-ass-2013.pdf", stream=True).status_code 
 
-scrape()
-input("All papers downloaded. Press [ENTER] to exit.")
+	# Check if paper is NCEA or Scholarship paper
+	if r == 200:
+		print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} NCEA paper detected")
+	elif r == 404:
+		# Some scholarship papers use qbk (math, english), others exm (sciences)
+		# To account for this, we make a request to both urls and check if either returns a 200 status
+		r2 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{standard}-qbk-2013.pdf", stream=True).status_code 
+		r3 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{standard}-exm-2013.pdf", stream=True).status_code
+		
+		if r2 == 200:
+			print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} Scholarship paper type qbk (likely math or essay) detected")
+			papertype = "qbk"
+		elif r3 == 200:
+			print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} Scholarship paper type exm (likely science) detected")
+			papertype = "exm"
+		else:
+			print(f"{colorama.Fore.RED}[ERROR]{colorama.Fore.WHITE} Paper not found. Did you input the correct AS number?")
+			scrape()
+
+	# Download files between first_year and last_year
+	for year in range(first_year, last_year + 1):
+		if scholarship_paper:
+			open(f"{subject}/{standard}/exm/{standard}-{papertype}-{year}.pdf", 'wb').write(requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/{year}/{standard}-{papertype}-{year}.pdf").content) 
+			print(f"{colorama.Fore.CYAN}[SCHOLARSHIP] {colorama.Fore.WHITE}Downloaded exam paper {colorama.Fore.CYAN}{standard}{colorama.Fore.WHITE} from {colorama.Fore.CYAN}{year}{colorama.Fore.WHITE}.")
+			open(f"{subject}/{standard}/ass/{standard}-ass-{year}.pdf", 'wb').write(requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/{year}/{standard}-ass-{year}.pdf").content)
+			print(f"{colorama.Fore.CYAN}[SCHOLARSHIP] {colorama.Fore.WHITE}Downloaded marking scheme {colorama.Fore.CYAN}{standard}{colorama.Fore.WHITE} from {colorama.Fore.CYAN}{year}{colorama.Fore.WHITE}.")
+		else: 
+			open(f"{subject}/{standard}/exm/{standard}-exm-{year}.pdf", 'wb').write(requests.get(f"https://www.nzqa.govt.nz/nqfdocs/ncea-resource/exams/{year}/{standard}-exm-{year}.pdf").content)
+			print(f"{colorama.Fore.WHITE}Downloaded exam paper {colorama.Fore.CYAN}{standard}{colorama.Fore.WHITE} from {colorama.Fore.CYAN}{year}{colorama.Fore.WHITE}.")
+			open(f"{subject}/{standard}/ass/{standard}-ass-{year}.pdf", 'wb').write(requests.get(f"https://www.nzqa.govt.nz/nqfdocs/ncea-resource/schedules/{year}/{standard}-ass-{year}.pdf").content)
+			print(f"{colorama.Fore.WHITE}Downloaded marking scheme {colorama.Fore.CYAN}{standard}{colorama.Fore.WHITE} from {colorama.Fore.CYAN}{year}{colorama.Fore.WHITE}.")
+	
+	input("All papers downloaded. Press [ENTER] to exit.")
+
+if __name__ == "__main__":
+	scrape()
