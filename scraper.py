@@ -28,18 +28,18 @@ def scrape():
   try: os.mkdir(f"{subj}/{ass}/ass")
   except: pass
 
-  r = requests.get(f"https://www.nzqa.govt.nz/nqfdocs/ncea-resource/exams/2013/{ass}-ass-2013.pdf").status_code # take mark scheme, it is smaller than question book most of the time
+  r = requests.get(f"https://www.nzqa.govt.nz/nqfdocs/ncea-resource/exams/2013/{ass}-ass-2013.pdf", stream=True).status_code # take mark scheme, it is smaller than question book most of the time
   if r == 200:
     NCEA = True
     print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} NCEA paper detected")
   elif r == 404:
     NCEA = False
-    r2 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{ass}-qbk-2013.pdf").status_code #some scholarship papers use qbk (math, english), others exm (sciences). we must account for this. waste of bandwidth tbh
+    r2 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{ass}-qbk-2013.pdf", stream=True).status_code #some scholarship papers use qbk (math, english), others exm (sciences). we must account for this. waste of bandwidth tbh
     if r2 == 200:
       print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} Scholarship paper type qbk (likely math or essay) detected")
       papertype = "qbk"
     else:
-      r3 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{ass}-exm-2013.pdf").status_code
+      r3 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{ass}-exm-2013.pdf", stream=True).status_code
       if r3 == 200:
         print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} Scholarship paper type exm (likely science) detected")
         papertype = "exm"
