@@ -16,6 +16,8 @@ requirements:
 
 `curl https://github.com/git-for-windows/git/releases/download/v2.38.1.windows.1/Git-2.38.1-64-bit.exe -o git.exe && git.exe` and follow the prompts
 
+- download the code
+
 `git clone https://github.com/YangAsher/NCEA-Past-Paper-Scraper.git`
 
 - if you do not have python:
@@ -27,10 +29,10 @@ requirements:
 
 `cd %appdata%/../Local/Programs/Python/Python311/Scripts/ && pip install requests colorama`
 
+- prereqs installed. this process only needs to occur once
 
 - to execute:
 
-`cd %appdata%/../../ && scraper.py`
+`cd %appdata%/../../NCEA-Past-Paper-Scraper && scraper.py`
 
-
-alternatively use the binary i built
+alternatively navigate to user/NCEA-Past-Paper-Scraper and run scraper.py or use the binary i built (bad idea)
