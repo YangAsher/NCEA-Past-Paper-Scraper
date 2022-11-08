@@ -8,7 +8,7 @@ requirements:
 
 # to run from src:
 
-- install prerequisites as follows:
+## install prerequisites as follows:
 
 - open cmd
 
@@ -29,9 +29,8 @@ requirements:
 
 `cd %appdata%/../Local/Programs/Python/Python311/Scripts/ && pip install requests colorama`
 
-- prereqs installed. this process only needs to occur once
 
-- to execute:
+## to execute:
 
 `cd %appdata%/../../NCEA-Past-Paper-Scraper && scraper.py`
 
