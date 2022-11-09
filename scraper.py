@@ -48,7 +48,7 @@ def scrape(first_year=2013, last_year=2021):
 		# To account for this, we make a request to both urls and check if either returns a 200 status
 		r2 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{standard}-qbk-2013.pdf", stream=True).status_code 
 		r3 = requests.get(f"https://www.nzqa.govt.nz/assets/scholarship/2013/{standard}-exm-2013.pdf", stream=True).status_code
-		
+		scholarship_paper = True # if it isn't, r2/3 will 404 and else will make the func recur
 		if r2 == 200:
 			print(f"{colorama.Fore.GREEN}[Paper Detected]{colorama.Fore.WHITE} Scholarship paper type qbk (likely math or essay) detected")
 			papertype = "qbk"
