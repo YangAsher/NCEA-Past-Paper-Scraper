@@ -6,6 +6,23 @@ requirements:
 - colorama
 - room temperature iq
 
+# usage
+
+### subject name
+
+![image](https://user-images.githubusercontent.com/117716531/201019214-4c44fa7f-59e9-4d82-ba35-ceeb2ff28201.png)
+
+type in subject name, this is the big folder the papers will be saved under
+
+### AS number
+
+![image](https://user-images.githubusercontent.com/117716531/201019385-99358968-d04f-478c-97c2-a13ac5a770f8.png)
+
+type in the AS number to download the papers of. you can download NCEA L1, L2, L3 or scholarship papers
+
+![image](https://user-images.githubusercontent.com/117716531/201019585-572c5fee-e294-41a2-8da1-841936d8cb76.png)
+
+
 # to run from src:
 
 ## install prerequisites as follows:
