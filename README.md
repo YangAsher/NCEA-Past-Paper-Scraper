@@ -51,4 +51,4 @@ type in the AS number to download the papers of. you can download NCEA L1, L2, L
 
 `cd %appdata%/../../NCEA-Past-Paper-Scraper && scraper.py`
 
-alternatively navigate to user/NCEA-Past-Paper-Scraper and run scraper.py or use the binary i built (bad idea)
+alternatively navigate to `user/NCEA-Past-Paper-Scraper` and run `scraper.py` or use the binary i built (bad idea)
