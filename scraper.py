@@ -30,8 +30,11 @@ def scrape(first_year=2013, last_year=2021):
 	if not os.path.exists(subject):
 		# Make required directories
 		os.mkdir(subject)
+	if not os.path.exists(f"{subject}/{standard}"):
 		os.mkdir(f"{subject}/{standard}")
+	if not os.path.exists(f"{subject}/{standard}/exm"):
 		os.mkdir(f"{subject}/{standard}/exm")
+	if not os.path.exists(f"{subject}/{standard}/ass"):
 		os.mkdir(f"{subject}/{standard}/ass")
 
 	# If an assessment standard is a scholarship paper or not 
